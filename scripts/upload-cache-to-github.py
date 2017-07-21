@@ -386,8 +386,9 @@ class Cache:
         self.entries = self.create_entries(cache_dir, temp_dir)
         self.remove_entries_from_server()
         if not os.path.exists(temp_dir):
-            print('Make {}'.format(temp_dir))
+            print('Make {}'.format(temp_dir), flush=True)
             os.makedirs(temp_dir)
+            print('Done', flush=True)
 
     def create_entries(self, cache_dir, temp_dir):
         print('Searching for CACHE.DONE files in directory:\n  {}\n'.format(cache_dir), flush=True)

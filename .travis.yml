@@ -28,7 +28,7 @@ before_install:
     - pip3 install --user requests
 script:
     - cmake -DHUNTER_JOBS_NUMBER=4 -DETHASHCUDA=$CUDA -DETHASHCL=ON -H. -Bbuild
-    - python3 ./scripts/upload-cache-to-github.py --username hunter-cache-bot --repo-owner ethereum --repo hunter-cache --cache-dir /home/travis/.hunter/_Base/Cache --temp-dir /tmp
+    - python3 ./scripts/upload-cache-to-github.py --username hunter-cache-bot --repo-owner ethereum --repo hunter-cache --cache-dir /home/travis/.hunter/_Base/Cache --temp-dir /home/travis/tmp
 #    - cmake -DHUNTER_JOBS_NUMBER=4 -DETHASHCUDA=$CUDA -DETHASHCL=ON -H. -Bbuild
 #    - cmake --build build -- -j4
 #    - build/ethminer/ethminer --list-devices -G
