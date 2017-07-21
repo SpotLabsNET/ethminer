@@ -76,7 +76,7 @@ class Github:
 
     @retry
     def get_release_by_tag(self, tagname):
-        print('Get release-id by tag `{}`'.format(tagname))
+        print('Get release-id by tag `{}`'.format(tagname), flush=True)
         # https://developer.github.com/v3/repos/releases/#get-a-release-by-tag-name
         # GET /repos/:owner/:repo/releases/tags/:tag
 
@@ -91,7 +91,7 @@ class Github:
             raise Exception('Get tag id failed. Requested url: {}'.format(url))
 
         tag_id = r.json()['id']
-        print('Tag id is {}'.format(tag_id))
+        print('Tag id is {}'.format(tag_id), flush=True)
         return tag_id
 
     @retry
@@ -155,21 +155,25 @@ class Github:
     def upload_bzip_once(self, url, local_path):
         headers = {'Content-Type': 'application/x-bzip2'}
         file_to_upload = open(local_path, 'rb')
+        print('POST', flush=True)
         r = requests.post(url, data=file_to_upload, headers=headers, auth=self.auth)
+        print('Done', flush=True)
         if not r.ok:
             raise Exception('Upload of file failed')
 
     @retry
     def upload_bzip(self, url, local_path, release_id, asset_name):
-        print('Uploading:\n  {}\n  -> {}'.format(local_path, url))
+        print('Uploading:\n  {}\n  -> {}'.format(local_path, url), flush=True)
         try:
             self.upload_bzip_once(url, local_path)
         except Exception as exc:
-            print('Exception catched while uploading, removing asset...')
+            print('Exception catched while uploading, removing asset...', flush=True)
             self.delete_asset_if_exists(release_id, asset_name)
             raise exc
+        print('Done', flush=True)
 
     def upload_raw_file(self, local_path):
+        print('Upload {}'.format(local_path), flush=True)
         tagname = 'cache'
         release_id = self.get_release_by_tag(tagname)
 
