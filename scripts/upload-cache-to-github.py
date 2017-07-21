@@ -297,7 +297,10 @@ class CacheEntry:
         assert(meta == self.cache_meta)
 
     def entry_from_server(self):
-        return os.path.exists(self.from_server)
+        print('Check {}'.format(self.from_server), flush=True)
+        r =  os.path.exists(self.from_server)
+        print('R {}'.format(r), flush=True)
+        return r
 
     def upload_raw(self, github):
         sha1 = open(self.cache_sha1, 'r').read()
@@ -305,6 +308,7 @@ class CacheEntry:
         github.upload_raw_file(raw)
 
     def upload_meta(self, github, cache_done):
+        print('upload_meta')
         self.upload_files_from_common_dir(github, self.cache_done_dir, cache_done)
         self.upload_files_from_common_dir(github, self.internal_deps_id, cache_done)
         self.upload_files_from_common_dir(github, self.type_id, cache_done)
@@ -318,6 +322,7 @@ class CacheEntry:
 
     def upload_files_from_common_dir(self, github, dir_path, cache_done, check_is_empty=False):
         to_upload = []
+        print('Checking {}'.format(dir_path))
         for i in os.listdir(dir_path):
             if i == 'cmake.lock':
                 continue
@@ -377,30 +382,35 @@ class CacheEntry:
 
 class Cache:
     def __init__(self, cache_dir, temp_dir):
+        print('Cache init', flush=True)
         self.entries = self.create_entries(cache_dir, temp_dir)
         self.remove_entries_from_server()
         if not os.path.exists(temp_dir):
+            print('Make {}'.format(temp_dir))
             os.makedirs(temp_dir)
 
     def create_entries(self, cache_dir, temp_dir):
-        print('Searching for CACHE.DONE files in directory:\n  {}\n'.format(cache_dir))
+        print('Searching for CACHE.DONE files in directory:\n  {}\n'.format(cache_dir), flush=True)
         entries = []
         for root, dirs, files in os.walk(cache_dir):
             for filename in files:
+                print('File {}'.format(filename), flush=True)
                 if filename == 'CACHE.DONE':
                     entries.append(CacheEntry(os.path.join(root, filename), cache_dir, temp_dir))
-        print('Found {} files:'.format(len(entries)))
+        print('Found {} files:'.format(len(entries)), flush=True)
         for i in entries:
-            print('  {}'.format(i.cache_done_path))
-        print('')
+            print('  {}'.format(i.cache_done_path), flush=True)
+        print('.', flush=True)
         return entries
 
     def remove_entries_from_server(self):
         new_entries = []
         for i in self.entries:
+            print('Check...', flush=True)
             if i.entry_from_server():
                 print('Remove entry (from server):\n  {}'.format(i.cache_done_path))
             else:
+                print('Keep{}'.format(i.cache_done_path), flush=True)
                 new_entries.append(i)
         self.entries = new_entries
 
@@ -466,6 +476,7 @@ if not os.path.isdir(cache_dir):
 if os.path.split(cache_dir)[1] != 'Cache':
     raise Exception('Cache directory path should ends with Cache: {}'.format(cache_dir))
 
+print('CREATE Cache obj', flush=True)
 cache = Cache(cache_dir, args.temp_dir)
 
 password = os.getenv('GITHUB_USER_PASSWORD')
@@ -485,6 +496,8 @@ if args.skip_raw:
 else:
     cache.upload_raw(github)
 
+
+print('Start', flush=True)
 cache.upload_meta(github, cache_done=False)
-print('Uploading DONE files')
+print('Uploading DONE files', flush=True)
 cache.upload_meta(github, cache_done=True) # Should be last
