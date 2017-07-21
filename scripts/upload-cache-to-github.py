@@ -63,16 +63,16 @@ class Github:
 
     @retry
     def simple_request(self):
-        print('Processing simple request')
+        print('Processing simple request', flush=True)
         r = requests.get('https://api.github.com', auth=self.auth)
         if not r.ok:
             sys.exit('Simple request fails. Check your password.')
 
         limit = int(r.headers['X-RateLimit-Remaining'])
-        print('GitHub Limit: {}'.format(limit))
+        print('GitHub Limit: {}'.format(limit), flush=True)
         if limit == 0:
             raise Exception('GitHub limit is 0')
-        print('Simple request pass')
+        print('Simple request pass', flush=True)
 
     @retry
     def get_release_by_tag(self, tagname):
@@ -480,7 +480,9 @@ if os.path.split(cache_dir)[1] != 'Cache':
 print('CREATE Cache obj', flush=True)
 cache = Cache(cache_dir, args.temp_dir)
 
+print('Check GITHUB_USER_PASSWORD', flush=True)
 password = os.getenv('GITHUB_USER_PASSWORD')
+print('Done', flush=True)
 
 if password == '' or password is None:
     raise Exception('Expected GITHUB_USER_PASSWORD environment variable')
