@@ -7,6 +7,7 @@ set(CMAKE_CONFIGURATION_TYPES Release RelWithDebInfo Debug)
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type on single-configuration generators")
 
 set(HUNTER_CONFIGURATION_TYPES Release)
+set(HUNTER_CACHE_SERVERS "https://github.com/ethereum/hunter-cache")
 include(HunterGate)
 HunterGate(
     URL "https://github.com/ruslo/hunter/archive/v0.19.14.tar.gz"
@@ -90,8 +91,8 @@ endfunction()
 hunter_add_package(jsoncpp)
 find_package(jsoncpp CONFIG REQUIRED)
 
-#hunter_add_package(libjson-rpc-cpp)
-#find_package(libjson-rpc-cpp CONFIG REQUIRED)
+hunter_add_package(libjson-rpc-cpp)
+find_package(libjson-rpc-cpp CONFIG REQUIRED)
 
 #configureProject()
 #
