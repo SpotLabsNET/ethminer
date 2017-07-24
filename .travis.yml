@@ -15,33 +15,29 @@ matrix:
           dist: trusty
           sudo: required
           env: CUDA=ON
-#        - os: osx
-#          osx_image: xcode8.3
-#          env: CUDA=OFF
+        - os: osx
+          osx_image: xcode8.3
+          env: CUDA=OFF
 cache:
     directories:
-#        - $HOME/.hunter/_Base/Cache
         - $HOME/.local
 before_install:
-#    - if [[ "$CUDA" = ON ]]; then source scripts/install-cuda-trusty.sh; fi
-#    - if [ "$TRAVIS_OS_NAME" = linux ]; then scripts/install_cmake.sh; fi
-    - pip3 install --user requests
+    - if [[ "$CUDA" = ON ]]; then source scripts/install-cuda-trusty.sh; fi
+    - if [ "$TRAVIS_OS_NAME" = linux ]; then scripts/install_cmake.sh; fi
 script:
     - cmake -DHUNTER_JOBS_NUMBER=4 -DETHASHCUDA=$CUDA -DETHASHCL=ON -H. -Bbuild
-    - scripts/upload-hunter-cache-to-github.sh
-#    - cmake -DHUNTER_JOBS_NUMBER=4 -DETHASHCUDA=$CUDA -DETHASHCL=ON -H. -Bbuild
-#    - cmake --build build -- -j4
-#    - build/ethminer/ethminer --list-devices -G
-#    - build/ethminer/ethminer --list-devices -U
-#    - if [ "$TRAVIS_OS_NAME" = linux ]; then ldd -v build/ethminer/ethminer; fi
-#    - if [ "$TRAVIS_OS_NAME" = osx ]; then otool -L build/ethminer/ethminer; fi
-#    - cmake --build build --target package
+    - cmake --build build -- -j4
+    - build/ethminer/ethminer --list-devices -G
+    - build/ethminer/ethminer --list-devices -U
+    - if [ "$TRAVIS_OS_NAME" = linux ]; then ldd -v build/ethminer/ethminer; fi
+    - if [ "$TRAVIS_OS_NAME" = osx ]; then otool -L build/ethminer/ethminer; fi
+    - cmake --build build --target package
 
 deploy:
-#  - provider: script
-#    script: scripts/upload-cache-to-github.py --username hunter-cache-bot --repo-owner ethereum --repo hunter-cache --cache-dir ~/.hunter/_Base/Cache --temp-dir ~/.hunter/tmp
-#    on:
-#      all_branches: true
+  - provider: script
+    script: scripts/upload-hunter-cache-to-github.sh
+    on:
+      all_branches: true
 
   - provider: releases
     api_key:
